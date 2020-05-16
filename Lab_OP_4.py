@@ -3,19 +3,19 @@ from sys import argv
 
 def encoder(data, dict_size):
     dictionary = dict((chr(i), i) for i in range(dict_size))
-    str = ""
-    lst = []
+    string = ""
+    lst = ''
     for symbol in data:
-        ss = str + symbol
+        ss = string + symbol
         if ss in dictionary:
-            str = ss
+            string = ss
         else:
-            lst.append(dictionary[str])
+            lst = lst + str(dictionary[string]) + ' '
             dictionary[ss] = dict_size
             dict_size += 1
-            str = symbol
-    if str:
-        lst.append(dictionary[str])
+            string = symbol
+    if string:
+        lst = lst + str(dictionary[string]) + ' '
     return lst
 
 
@@ -39,27 +39,39 @@ def decoder(data, dict_size):
     return s
 
 
-# data = open(str(argv[2]))
-name_file=str(argv[2])
-data = open(name_file)
-dict_size = 256
-print(data)
-for s in data:
-    print(s)
+def parse_file(text):
+    result_list = []
+    for line in text:
+        numbs = line.split()
+    result_list.append(numbs)
+    return result_list
 
 
-out = name_file.split(".")[0]
-output_file = open(out + ".lzw", "w")
-
-
-if str(argv[1]) == "e":
+if argv[1]=="e":
+    name_file = str(argv[2])
+    data = open(name_file)
+    out = name_file.split(".")[0]
+    output_file = open(out + ".lzw", "w")
+    dict_size = 256
+    for s in data:
+        print(s)
     encoded = encoder(s, dict_size)
-
+    output_file.write(encoded)
     print(encoded)
-    output_file.write(str(encoded))
-# elif str(argv[1])=="d":
-#     decoded = decoder(encoded, dict_size)
-#     print(decoded)
-
+if argv[1]=="d":
+    dict_size = 256
+    name_file=str(argv[2])
+    data = open(name_file)
+    for s in data:
+        print(s)
+    encoded=s.split()
+    print(encoded)
+    for i in range(len(encoded)):
+        encoded[i]= int(encoded[i])
+    decoded = decoder(encoded, dict_size)
+    print(decoded)
+    out = name_file.split(".")[0]
+    output_file = open(out + ".txt", "w")
+    output_file.write(decoded)
 
 
