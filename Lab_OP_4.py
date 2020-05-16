@@ -1,3 +1,24 @@
+from sys import argv
+
+
+def encoder(data, dict_size):
+    dictionary = dict((chr(i), i) for i in range(dict_size))
+    string = ""
+    lst = ''
+    for symbol in data:
+        ss = string + symbol
+        if ss in dictionary:
+            string = ss
+        else:
+            lst = lst + str(dictionary[string]) + ' '
+            dictionary[ss] = dict_size
+            dict_size += 1
+            string = symbol
+    if string:
+        lst = lst + str(dictionary[string]) + ' '
+    return lst
+
+
 def decoder(data, dict_size):
     dictionary = dict((i, chr(i)) for i in range(dict_size))
     lst = []
@@ -18,7 +39,29 @@ def decoder(data, dict_size):
     return s
 
 
-name_file = str(argv[2])
-data = open(name_file)
+name_file = "123.txt"
+data = open("123.txt")
+out = name_file.split(".")[0]
+output_file = open(out + ".lzw", "w")
 dict_size = 256
-print(decoder(data, dict_size))
+for s in data:
+    print(s)
+encoded = encoder(s, dict_size)
+output_file.write(encoded)
+
+
+
+print(encoded)
+# output_file.write(encoded)
+# decoded = decoder(encoded, dict_size)
+# print(decoded)
+
+# if len(argv) > 1:
+#     formulaa = ""
+#     for i in range(1, len(argv)):
+#         formulaa = str(formulaa) + str(argv[i])
+#
+# else:
+#     print("ERROR")
+
+
