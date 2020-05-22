@@ -1,77 +1,73 @@
 from sys import argv
+from struct import *
+from config import *
 
 
-def encoder(data, dict_size):
-    dictionary = dict((chr(i), i) for i in range(dict_size))
+def Encode(data, dict_s):
+    dictE = {chr(i): i for i in range(dict_s)}
     string = ""
-    lst = ''
-    for symbol in data:
-        ss = string + symbol
-        if ss in dictionary:
-            string = ss
+    for symb in data:
+        string_plus_symbol = string + symb
+        if string_plus_symbol in dictE:
+            string = string_plus_symbol
         else:
-            lst = lst + str(dictionary[string]) + ' '
-            dictionary[ss] = dict_size
-            dict_size += 1
-            string = symbol
-    if string:
-        lst = lst + str(dictionary[string]) + ' '
-    return lst
+            comp_data.append(dictE[string])
+            dictE[string_plus_symbol] = dict_s
+            dict_s = dict_s + 1
+            string = symb
+    if string in dictE:
+        comp_data.append(dictE[string])
+    return comp_data
 
 
-def decoder(data, dict_size):
-    dictionary = dict((i, chr(i)) for i in range(dict_size))
-    lst = []
-    str = chr(data.pop(0))
-    lst.append(str)
-    for key in data:
-        if key in dictionary:
-            entry = dictionary[key]
-        elif key == dict_size:
-            entry = str + str[0]
-        lst.append(entry)
-        dictionary[dict_size] = str + entry[0]
-        dict_size += 1
-        str = entry
-    s = ''
-    for i in range(len(lst)):
-        s = s + lst[i]
-    return s
+def read_comp_file(file):
+    while True:
+        rec = file.read(2)
+        if len(rec) != 2:
+            break
+        (data,) = unpack('>H', rec)
+        comp_data.append(data)
+    return comp_data
 
 
-def parse_file(text):
-    result_list = []
-    for line in text:
-        numbs = line.split()
-    result_list.append(numbs)
-    return result_list
+def Decode(n_code, comp_data,string):
+    dictD = dict([(x, chr(x)) for x in range(dict_s)])
+    decomp_data = ""
+    for code in comp_data:
+        if code in dictD:
+            pass
+        else:
+            dictD[code] = string + (string[0])
+        decomp_data += dictD[code]
+        if len(string) == 0:
+            pass
+        else:
+            dictD[n_code] = string + (dictD[code][0])
+            n_code += 1
+        string = dictD[code]
+    return decomp_data
 
 
-if argv[1]=="e":
-    name_file = str(argv[2])
-    data = open(name_file)
-    out = name_file.split(".")[0]
-    output_file = open(out + ".lzw", "w")
-    dict_size = 256
-    for s in data:
-        print(s)
-    encoded = encoder(s, dict_size)
-    output_file.write(encoded)
-    print(encoded)
-if argv[1]=="d":
-    dict_size = 256
-    name_file=str(argv[2])
-    data = open(name_file)
-    for s in data:
-        print(s)
-    encoded=s.split()
-    print(encoded)
-    for i in range(len(encoded)):
-        encoded[i]= int(encoded[i])
-    decoded = decoder(encoded, dict_size)
-    print(decoded)
-    out = name_file.split(".")[0]
+if argv[1] == "e":
+    input_file = argv[2]
+    file = open(input_file)
+    data = file.read()
+    out = input_file.split(".")[0]
+    output_file = open(out + ".lzw", "wb")
+    comp_data = Encode(data, dict_s)
+    for data in comp_data:
+        output_file.write(pack('>H', int(data)))
+    output_file.close()
+    file.close()
+if argv[1] == "d":
+    input_file = argv[2]
+    file = open(input_file, "rb")
+    out = input_file.split(".")[0]
     output_file = open(out + ".txt", "w")
-    output_file.write(decoded)
-
-
+    comp_data = read_comp_file(file)
+    string = ''
+    decomp_data = Decode(n_code, comp_data,string)
+    for data in decomp_data:
+        output_file.write(data)
+    output_file.close()
+    file.close()
